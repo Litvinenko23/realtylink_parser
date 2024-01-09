@@ -95,6 +95,19 @@ def extract_price(soup):
     return price_tag.get("content") if price_tag else None
 
 
+def extract_rooms_quantity(soup):
+    bathrooms_tag = soup.find("div", class_="col-lg-3 col-sm-6 sdb")
+    bedrooms_tag = soup.find("div", class_="col-lg-3 col-sm-6 cac")
+    bathrooms = bathrooms_tag.text.strip() if bathrooms_tag else None
+    bedrooms = bedrooms_tag.text.strip() if bedrooms_tag else None
+    return ", ".join(filter(None, [bathrooms, bedrooms]))
+
+
+def extract_floor_area(soup):
+    floor_area_tag = soup.find("div", class_="carac-value")
+    return floor_area_tag.text.strip().split()[0] if floor_area_tag else None
+
+
 def main():
     driver = webdriver.Chrome()
     driver.get("https://realtylink.org/en/properties~for-rent?uc=2")
