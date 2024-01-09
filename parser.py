@@ -78,6 +78,13 @@ def extract_title(soup):
     return title_tag.text.strip() if title_tag else None
 
 
+def extract_location(soup):
+    location_data = soup.find("h2", {"itemprop": "address"}).text.strip()
+    region = ", ".join(location_data.split(", ")[1:])
+    address = location_data.split(", ")[0]
+    return region, address
+
+
 def main():
     driver = webdriver.Chrome()
     driver.get("https://realtylink.org/en/properties~for-rent?uc=2")
