@@ -1,4 +1,5 @@
 import json
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -106,6 +107,20 @@ def extract_rooms_quantity(soup):
 def extract_floor_area(soup):
     floor_area_tag = soup.find("div", class_="carac-value")
     return floor_area_tag.text.strip().split()[0] if floor_area_tag else None
+
+
+def get_photo_links(url):
+    response = requests.get(url, headers=HEADERS)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        script_tag = soup.find("script", string=re.compile("window.MosaicPhotoUrls"))
+        script_content = script_tag.string
+
+        photo_urls = re.findall(r'"(https://[^"]+)"', script_content)
+        return photo_urls
+    else:
+        print(f"Request error: {response.status_code}")
 
 
 def main():
