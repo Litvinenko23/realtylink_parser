@@ -18,7 +18,7 @@ FIRST_PAGE_URL = "https://realtylink.org/en/properties~for-rent?uc=2"
 APARTMENTS_DATA = []
 
 
-def parse_main_page(url, max_pages=3):
+def parse_main_page(url, driver, max_pages=3):
     page_count = 0
     while page_count < max_pages:
         response = requests.get(url, headers=HEADERS)
@@ -91,6 +91,13 @@ def extract_description(soup):
     return description_tag.text.strip() if description_tag else None
 
 
+def extract_images(soup):
+    script_tag = soup.find("script", string=re.compile("window.MosaicPhotoUrls"))
+    script_content = script_tag.string
+    photo_urls = re.findall(r'"(https://[^"]+)"', script_content)
+    return photo_urls
+
+
 def extract_price(soup):
     price_tag = soup.find("meta", {"itemprop": "price"})
     return price_tag.get("content") if price_tag else None
@@ -109,25 +116,11 @@ def extract_floor_area(soup):
     return floor_area_tag.text.strip().split()[0] if floor_area_tag else None
 
 
-def get_photo_links(url):
-    response = requests.get(url, headers=HEADERS)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        script_tag = soup.find("script", string=re.compile("window.MosaicPhotoUrls"))
-        script_content = script_tag.string
-
-        photo_urls = re.findall(r'"(https://[^"]+)"', script_content)
-        return photo_urls
-    else:
-        print(f"Request error: {response.status_code}")
-
-
 def main():
     driver = webdriver.Chrome()
     driver.get("https://realtylink.org/en/properties~for-rent?uc=2")
     try:
-        parse_main_page(FIRST_PAGE_URL, max_pages=3)
+        parse_main_page(FIRST_PAGE_URL, driver, max_pages=3)
     finally:
         driver.quit()
 
