@@ -90,6 +90,11 @@ def extract_description(soup):
     return description_tag.text.strip() if description_tag else None
 
 
+def extract_price(soup):
+    price_tag = soup.find("meta", {"itemprop": "price"})
+    return price_tag.get("content") if price_tag else None
+
+
 def main():
     driver = webdriver.Chrome()
     driver.get("https://realtylink.org/en/properties~for-rent?uc=2")
