@@ -73,6 +73,11 @@ def parse_details_page(url):
         print(f"Request error: {response.status_code}")
 
 
+def extract_title(soup):
+    title_tag = soup.find("span", {"data-id": "PageTitle"})
+    return title_tag.text.strip() if title_tag else None
+
+
 def main():
     driver = webdriver.Chrome()
     driver.get("https://realtylink.org/en/properties~for-rent?uc=2")
