@@ -36,6 +36,38 @@ def parse_main_page(url, max_pages=3):
             print(f"Request error: {response.status_code}")
 
 
+def parse_details_page(url):
+    response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        title = extract_title(soup)
+        region, address = extract_location(soup)
+        description = extract_description(soup)
+        images = extract_images(soup)
+        price = extract_price(soup)
+        rooms_quantity = extract_rooms_quantity(soup)
+        floor_area = extract_floor_area(soup)
+
+        apartment_data = {
+            "link": url,
+            "title": title,
+            "region": region,
+            "address": address,
+            "description": description,
+            "images": images,
+            "price": price,
+            "rooms_quantity": rooms_quantity,
+            "floor_area": floor_area
+        }
+
+        APARTMENTS_DATA.append(apartment_data)
+
+    else:
+        print(f"Request error: {response.status_code}")
+
+
 def main():
     driver = webdriver.Chrome()
     driver.get("https://realtylink.org/en/properties~for-rent?uc=2")
